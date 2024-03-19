@@ -16,6 +16,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "mocha": "^8.1.3"
   }
 }
