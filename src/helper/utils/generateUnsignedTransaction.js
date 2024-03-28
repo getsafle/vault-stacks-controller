@@ -1,4 +1,7 @@
 const { TransactionTypes } = require('@stacks/connect');
+const { AnchorMode } = require('@stacks/transactions');
+const { generatePostConditions } = require('./generatePostConditions')
+const { gerenateFunctionArgs } = require('./gerenateFunctionArgs')
 
 function isTransactionTypeSupported(txType) {
     return (
@@ -9,12 +12,12 @@ function isTransactionTypeSupported(txType) {
 }
 
 function generateUnsignedSTXTransferTx(transaction, privateKey, network) {
-    const { from, to, amount } = transaction
+    const { from, to, amount, anchorMode } = transaction
 
     const rawTx = {
         recipient: to,
         amount: amount,
-        anchorMode: 'any',
+        anchorMode: anchorMode ?? AnchorMode.Any,
         senderKey: privateKey,
         network: network,
     };
@@ -23,7 +26,25 @@ function generateUnsignedSTXTransferTx(transaction, privateKey, network) {
 }
 
 function generateUnsignedContractCallTx(transaction, privateKey, network) {
+    const { from, to, amount, anchorMode, contractDetails : {contractAddress, contractName, assetName}, memo} = transaction
 
+    const postConditions = generatePostConditions(transaction)
+    const functionArgs = gerenateFunctionArgs(from, to, amount, memo)
+
+    let rawTxContractCall = {
+        recipient: to,
+        contractAddress: contractAddress,
+        contractName: contractName,
+        functionName: assetName,
+        functionArgs: functionArgs,
+        postConditions: postConditions,
+        amount: amount,
+        anchorMode: anchorMode ?? AnchorMode.Any,
+        senderKey: privateKey,
+        network: network,
+    };
+
+    return rawTxContractCall;
 }
 
 function generateUnsignedContractDeployTx(transaction, privateKey, network) {
