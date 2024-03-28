@@ -1,6 +1,6 @@
 
 var assert = require('assert');
-const {KeyringController : StacksKerring } = require('../src/index')
+const {KeyringController : StacksKerring, getBalance } = require('../src/index')
 const {
     HD_WALLET_12_MNEMONIC,
     TEST_ADDRESS_1,
@@ -30,19 +30,19 @@ describe('KeyringController', async () => {
         stacksKeyring = new StacksKerring(opts);
         await stacksKeyring.generateWallet();
     })
-
-    it('get accounts', async () => {
-        const accounts = await stacksKeyring.getAccounts();
-        console.log("accounts =", accounts);
-        assert(accounts[0] === TEST_ADDRESS_1, "First account should be " + TEST_ADDRESS_1)
-        
-    })
     
     it('addAccount', async () => {
         const wallet = await stacksKeyring.addAccount();
         assert(wallet.address === TEST_ADDRESS_2, "Added address should be " + TEST_ADDRESS_2)
     })
 
+    it('get accounts', async () => {
+        const accounts = await stacksKeyring.getAccounts();
+        console.log("accounts =", accounts);
+        assert(accounts[0] === TEST_ADDRESS_1, "First account should be " + TEST_ADDRESS_1)
+        assert(accounts[1] === TEST_ADDRESS_2, "First account should be " + TEST_ADDRESS_2)
+    })
+    
     it('importWallet', async () => {
         const importedAddress = await stacksKeyring.importWallet(EXTERNAL_ACCOUNT_PRIVATE_KEY)
         assert(importedAddress === EXTERNAL_ACCOUNT_ADDRESS, "Imported address should be " + EXTERNAL_ACCOUNT_ADDRESS)
@@ -51,6 +51,11 @@ describe('KeyringController', async () => {
     it('exportPrivateKey', async () => {
         const {privateKey} = await stacksKeyring.exportPrivateKey(TEST_ADDRESS_1)
         assert(privateKey === PRIVATE_KEY_1, "Exported private key should be " + PRIVATE_KEY_1)
+    })
+
+    it('getBalance', async () => {
+        const { balance } = await getBalance(TEST_ADDRESS_1, "TESTNET")
+        assert(balance > 0, "Balance should be greater than 0")
     })
 
     

@@ -1,7 +1,9 @@
+const axios = require("axios");
 const ObservableStore = require('obs-store')
 const stacks = require('@stacks/wallet-sdk');
 const transactions_1 = require('@stacks/transactions');
 const helpers = require('./helper/index');
+const { HIRO_BASE_URL, HIRO_BASE_TEST_URL }  = require('./constants/index');
 
 const { network: { MAINNET, TESTNET }} = require('./config/index')
 
@@ -26,7 +28,6 @@ class KeyringController {
         const address = stacks.getStxAddress({ account: wallet.accounts[wallet.accounts.length - 1], transactionVersion: helpers.getTransactionVersion(networkType) });
         this.persistAllAddress(address)
         this.updatePersistentStore({ wallet: wallet })
-        console.log("address = ", address);
         return { address: address }
     }
 
@@ -71,5 +72,19 @@ class KeyringController {
     }
 }
 
+const getBalance = async (address, network) => {
+    try {
+        let URL = network === TESTNET ? HIRO_BASE_TEST_URL : HIRO_BASE_URL
+        URL = URL + `address/${address}/balances`
+        const balance = await axios({
+          url : `${URL}`,
+          method: 'GET'
+        });
+        return { balance: balance.data.stx.balance / 1000000 }
+      } catch (err) {
+        throw err
+      }
+}
 
-module.exports = { KeyringController }
+
+module.exports = { KeyringController, getBalance }
