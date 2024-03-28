@@ -58,6 +58,32 @@ class KeyringController {
         }
     }
 
+    async signTransaction(transaction, _privateKey = null) {
+        const { wallet, network, address } = this.store.getState()
+        const { from } = transaction
+
+        let privateKey = _privateKey
+        if (!privateKey) {
+            const idx = address.indexOf(from)
+            if (idx < 0)
+                throw "Invalid address, the address is not available in the wallet"
+            
+            privateKey = wallet.accounts[idx].stxPrivateKey
+        }
+
+        const unsignedTransaction = helpers.generateUnsignedTransaction(transaction, privateKey, network)
+
+        const signedTransaction = await transactions_1.makeSTXTokenTransfer(unsignedTransaction);
+        return { signedTransaction };
+        
+    }
+
+    async sendTransaction(TransactionObj) {
+        const { network } = this.store.getState()
+        const broadcastResponse = await transactions_1.broadcastTransaction(TransactionObj, network);
+        return { transactionDetails: broadcastResponse.txid }
+    }
+
     persistAllAddress(_address) {
         const { address } = this.store.getState()
         const newAdd = address
