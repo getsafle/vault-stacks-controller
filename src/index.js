@@ -2,6 +2,7 @@ const axios = require("axios");
 const ObservableStore = require('obs-store')
 const stacks = require('@stacks/wallet-sdk');
 const transactions_1 = require('@stacks/transactions');
+const { TransactionTypes } = require('@stacks/connect');
 const helpers = require('./helper/index');
 const { HIRO_BASE_URL, HIRO_BASE_TEST_URL }  = require('./constants/index');
 
@@ -60,7 +61,7 @@ class KeyringController {
 
     async signTransaction(transaction, _privateKey = null) {
         const { wallet, network, address } = this.store.getState()
-        const { from } = transaction
+        const { from, transactionType } = transaction
 
         let privateKey = _privateKey
         if (!privateKey) {
@@ -72,8 +73,16 @@ class KeyringController {
         }
 
         const unsignedTransaction = helpers.generateUnsignedTransaction(transaction, privateKey, network)
-
-        const signedTransaction = await transactions_1.makeSTXTokenTransfer(unsignedTransaction);
+        let signedTransaction
+        switch (transactionType) {
+            case TransactionTypes.STXTransfer:
+                signedTransaction = await transactions_1.makeSTXTokenTransfer(unsignedTransaction);
+                break;
+            case TransactionTypes.ContractCall:
+                signedTransaction = await transactions_1.makeContractCall(unsignedTransaction);
+                break;
+        }
+        
         return { signedTransaction };
         
     }

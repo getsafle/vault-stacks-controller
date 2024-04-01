@@ -47,10 +47,6 @@ function generateUnsignedContractCallTx(transaction, privateKey, network) {
     return rawTxContractCall;
 }
 
-function generateUnsignedContractDeployTx(transaction, privateKey, network) {
-
-}
-
 function generateUnsignedTransaction(transaction, privateKey, network) {
     const { transactionType } = transaction
 
@@ -63,10 +59,8 @@ function generateUnsignedTransaction(transaction, privateKey, network) {
             return generateUnsignedSTXTransferTx(transaction, privateKey, network);
         case TransactionTypes.ContractCall:
             return generateUnsignedContractCallTx(transaction, privateKey, network);
-        case TransactionTypes.ContractDeploy:
-            return generateUnsignedContractDeployTx(transaction, privateKey, network);
     }
 
 }
 
-module.exports = { isTransactionTypeSupported, generateUnsignedSTXTransferTx, generateUnsignedContractCallTx, generateUnsignedContractDeployTx, generateUnsignedTransaction }
+module.exports = { isTransactionTypeSupported, generateUnsignedSTXTransferTx, generateUnsignedContractCallTx, generateUnsignedTransaction }
