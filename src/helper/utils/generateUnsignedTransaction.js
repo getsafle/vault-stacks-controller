@@ -38,7 +38,7 @@ function generateUnsignedContractCallTx(transaction, privateKey, network) {
         recipient: to,
         contractAddress: contractAddress,
         contractName: contractName,
-        functionName: assetName,
+        functionName: 'transfer',
         functionArgs: functionArgs,
         postConditions: postConditions,
         amount: amount,
