@@ -87,6 +87,23 @@ class KeyringController {
         
     }
 
+    async signMessage(message, _address, _privateKey = null) {
+        const messageHash = Buffer.from(message).toString('hex');
+
+        let privateKey = _privateKey
+        if (!privateKey) {
+            const idx = address.indexOf(from)
+            if (idx < 0)
+                throw "Invalid address, the address is not available in the wallet"
+            
+            privateKey = wallet.accounts[idx].stxPrivateKey
+        }
+        const privKey = (0, transactions_1.createStacksPrivateKey)(privateKey);
+
+        const signature = transactions_1.signMessageHashRsv({messageHash: messageHash, privateKey: privKey});
+        return { signedMessage: signature.data };
+    }
+
     async sendTransaction(TransactionObj) {
         const { network } = this.store.getState()
         const broadcastResponse = await transactions_1.broadcastTransaction(TransactionObj, network);
