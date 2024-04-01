@@ -8,6 +8,9 @@ const {
     TEST_ADDRESS_2,
     EXTERNAL_ACCOUNT_PRIVATE_KEY,
     EXTERNAL_ACCOUNT_ADDRESS,
+    VELAR_CONTRACT_ADDRESS,
+    CONTRACT_NAME,
+    ASSET_NAME,
     EXTERNAL_ACCOUNT_WRONG_PRIVATE_KEY_1,
     EXTERNAL_ACCOUNT_WRONG_PRIVATE_KEY_2,
     EXTERNAL_ACCOUNT_WRONG_PRIVATE_KEY_3,
@@ -59,4 +62,99 @@ describe('KeyringController', async () => {
     })
 
     
-})
+    it("sign STX transfer transaction", async () => {
+        const acc = await stacksKeyring.getAccounts();
+        const txns = {
+          from: acc[0],
+          to: acc[1],
+          amount: 1,
+          transactionType: "token_transfer",
+        };
+    
+        let { signedTransaction } = await stacksKeyring.signTransaction(txns);
+    
+        assert(signedTransaction.payload, "Transaction not signed successfully");
+        assert(signedTransaction.auth, "Transaction not signed successfully");
+    });
+    
+    it("invalid transaction type", async () => {
+        const acc = await stacksKeyring.getAccounts();
+        const txns = {
+            from: acc[0],
+            to: acc[1],
+            amount: 1,
+            transactionType: "abc",
+        };
+
+        try {
+            let { signedTransaction } = await stacksKeyring.signTransaction(txns);
+        } catch (e) {
+            assert(e.message === "Invalid Transaction Type: abc");
+        }
+    });
+
+    it("sign contract function call, NFT transfer transaction", async () => {
+        const acc = await stacksKeyring.getAccounts();
+
+        const txnsVelar = {
+            from: acc[0],
+            to: acc[1],
+            amount: 1,
+            contractDetails: {
+            contractAddress: VELAR_CONTRACT_ADDRESS,
+            contractName: CONTRACT_NAME,
+            assetName: ASSET_NAME,
+            },
+            transactionType: "contract_call",
+        };
+
+        let { signedTransaction } = await stacksKeyring.signTransaction(txnsVelar);
+
+        assert(signedTransaction.payload, "Transaction not signed successfully")
+        assert(signedTransaction.auth, "Transaction not signed successfully")
+    });
+
+
+    it("invalid contract function call, NFT transfer transaction", async () => {
+        const acc = await stacksKeyring.getAccounts();
+
+        // not sending contract information
+        const txnsVelar = {
+            from: acc[0],
+            to: acc[1],
+            amount: 1,
+        //   contractDetails: {
+        //     contractAddress: VELAR_CONTRACT_ADDRESS,
+        //     contractName: CONTRACT_NAME,
+        //     assetName: ASSET_NAME,
+        //   },
+            transactionType: "contract_call",
+        };
+
+        try{
+            let { signedTransaction } = await stacksKeyring.signTransaction(txnsVelar);
+        }catch (e){
+            assert(e.message === "Contract Details are missing");
+        }
+    });
+
+
+    it('sign Message', async () => {
+        const acc = await stacksKeyring.getAccounts();
+        let msg1  = await stacksKeyring.signMessage(TESTING_MESSAGE_1, acc[0], PRIVATE_KEY_1)
+        assert(msg1.signedMessage, "Message not signed successfully")
+    })
+
+
+    it('invalid pKey to sign Message', async () => {
+        const acc = await stacksKeyring.getAccounts();
+        try {
+            let msg1  = await stacksKeyring.signMessage(TESTING_MESSAGE_1, acc[1], 'abc')
+        }catch (e) {
+            assert(e.message === "Improperly formatted private-key. Private-key byte length should be 32 or 33. Length provided: 2");
+        }
+        
+    })
+    
+    
+});

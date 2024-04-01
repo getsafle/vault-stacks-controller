@@ -17,6 +17,10 @@ module.exports = {
     TESTING_MESSAGE_2: "This_message_two_is_for_testing",
     TESTING_MESSAGE_3: "This message three is for testing",
 
+    VELAR_CONTRACT_ADDRESS: 'ST20X3DC5R091J8B6YPQT638J8NR1W83KN6JQ4P6F',
+    CONTRACT_NAME: 'velar',
+    ASSET_NAME: 'velar',
+
     STACKS_NETWORK: {
         MAINNET: 'MAINNET',
         TESTNET: 'TESTNET',

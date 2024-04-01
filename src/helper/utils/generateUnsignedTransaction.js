@@ -26,6 +26,9 @@ function generateUnsignedSTXTransferTx(transaction, privateKey, network) {
 }
 
 function generateUnsignedContractCallTx(transaction, privateKey, network) {
+    if (!transaction?.contractDetails?.assetName || !transaction?.contractDetails?.contractName || !transaction?.contractDetails?.contractAddress) {
+        throw new Error("Contract Details are missing")
+    }
     const { from, to, amount, anchorMode, contractDetails : {contractAddress, contractName, assetName}, memo} = transaction
 
     const postConditions = generatePostConditions(transaction)
@@ -52,7 +55,7 @@ function generateUnsignedTransaction(transaction, privateKey, network) {
 
     const isValid = isTransactionTypeSupported(transactionType);
 
-  if (!isValid) throw new Error(`Invalid Transaction Type: ${txData.txType}`);
+  if (!isValid) throw new Error(`Invalid Transaction Type: ${transactionType}`);
 
     switch (transactionType) {
         case TransactionTypes.STXTransfer:
