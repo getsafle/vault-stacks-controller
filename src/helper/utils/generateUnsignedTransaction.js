@@ -1,7 +1,7 @@
 const { TransactionTypes } = require('@stacks/connect');
 const { AnchorMode } = require('@stacks/transactions');
 const { generatePostConditions } = require('./generatePostConditions')
-const { gerenateFunctionArgs } = require('./gerenateFunctionArgs')
+const { generateFunctionArgs } = require('./generateFunctionArgs')
 
 function isTransactionTypeSupported(txType) {
     return (
@@ -32,7 +32,7 @@ function generateUnsignedContractCallTx(transaction, privateKey, network) {
     const { from, to, amount, anchorMode, contractDetails : {contractAddress, contractName, assetName}, memo} = transaction
 
     const postConditions = generatePostConditions(transaction)
-    const functionArgs = gerenateFunctionArgs(from, to, amount, memo)
+    const functionArgs = generateFunctionArgs(from, to, amount, memo)
 
     let rawTxContractCall = {
         recipient: to,
