@@ -1,7 +1,10 @@
+const axios = require("axios");
 const ObservableStore = require('obs-store')
 const stacks = require('@stacks/wallet-sdk');
 const transactions_1 = require('@stacks/transactions');
+const { TransactionTypes } = require('@stacks/connect');
 const helpers = require('./helper/index');
+const { HIRO_BASE_URL, HIRO_BASE_TEST_URL }  = require('./constants/index');
 
 const { network: { MAINNET, TESTNET }} = require('./config/index')
 
@@ -26,7 +29,6 @@ class KeyringController {
         const address = stacks.getStxAddress({ account: wallet.accounts[wallet.accounts.length - 1], transactionVersion: helpers.getTransactionVersion(networkType) });
         this.persistAllAddress(address)
         this.updatePersistentStore({ wallet: wallet })
-        console.log("address = ", address);
         return { address: address }
     }
 
@@ -57,6 +59,57 @@ class KeyringController {
         }
     }
 
+    async signTransaction(transaction, _privateKey = null) {
+        const { wallet, network, address } = this.store.getState()
+        const { from, transactionType } = transaction
+
+        let privateKey = _privateKey
+        if (!privateKey) {
+            const idx = address.indexOf(from)
+            if (idx < 0)
+                throw "Invalid address, the address is not available in the wallet"
+            
+            privateKey = wallet.accounts[idx].stxPrivateKey
+        }
+
+        const unsignedTransaction = helpers.generateUnsignedTransaction(transaction, privateKey, network)
+        let signedTransaction
+        switch (transactionType) {
+            case TransactionTypes.STXTransfer:
+                signedTransaction = await transactions_1.makeSTXTokenTransfer(unsignedTransaction);
+                break;
+            case TransactionTypes.ContractCall:
+                signedTransaction = await transactions_1.makeContractCall(unsignedTransaction);
+                break;
+        }
+        
+        return { signedTransaction };
+        
+    }
+
+    async signMessage(message, _address, _privateKey = null) {
+        const messageHash = Buffer.from(message).toString('hex');
+
+        let privateKey = _privateKey
+        if (!privateKey) {
+            const idx = address.indexOf(from)
+            if (idx < 0)
+                throw "Invalid address, the address is not available in the wallet"
+            
+            privateKey = wallet.accounts[idx].stxPrivateKey
+        }
+        const privKey = (0, transactions_1.createStacksPrivateKey)(privateKey);
+
+        const signature = transactions_1.signMessageHashRsv({messageHash: messageHash, privateKey: privKey});
+        return { signedMessage: signature.data };
+    }
+
+    async sendTransaction(TransactionObj) {
+        const { network } = this.store.getState()
+        const broadcastResponse = await transactions_1.broadcastTransaction(TransactionObj, network);
+        return { transactionDetails: broadcastResponse.txid }
+    }
+
     persistAllAddress(_address) {
         const { address } = this.store.getState()
         const newAdd = address
@@ -71,5 +124,19 @@ class KeyringController {
     }
 }
 
+const getBalance = async (address, network) => {
+    try {
+        let URL = network === TESTNET ? HIRO_BASE_TEST_URL : HIRO_BASE_URL
+        URL = URL + `address/${address}/balances`
+        const balance = await axios({
+          url : `${URL}`,
+          method: 'GET'
+        });
+        return { balance: balance.data.stx.balance / 1000000 }
+      } catch (err) {
+        throw err
+      }
+}
 
-module.exports = { KeyringController }
+
+module.exports = { KeyringController, getBalance }
