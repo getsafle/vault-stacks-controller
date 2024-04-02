@@ -7,7 +7,7 @@ const {
   } = require('@stacks/transactions');
 
 
-function gerenateFunctionArgs(from, to, amount, memo) {
+function generateFunctionArgs(from, to, amount, memo) {
 
     memo = memo && memo !== ''
           ? someCV(bufferCVFromString(memo || ''))
@@ -21,4 +21,4 @@ function gerenateFunctionArgs(from, to, amount, memo) {
       ]
 }
 
-module.exports = { gerenateFunctionArgs }
+module.exports = { generateFunctionArgs }

@@ -11,3 +11,6 @@
 - Added functionality to sign message
 - Added ckecks to function params
 - Added test cases for sign message and transaction function
+- Added fees estimation for STX andd fungible token transfers
+- Added test cases for estimate transaction fee
+

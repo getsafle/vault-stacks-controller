@@ -5,6 +5,7 @@ const transactions_1 = require('@stacks/transactions');
 const { TransactionTypes } = require('@stacks/connect');
 const helpers = require('./helper/index');
 const { HIRO_BASE_URL, HIRO_BASE_TEST_URL }  = require('./constants/index');
+const { NoEstimateAvailableError} = require('@stacks/transactions/dist/errors');
 
 const { network: { MAINNET, TESTNET }} = require('./config/index')
 
@@ -108,6 +109,51 @@ class KeyringController {
         const { network } = this.store.getState()
         const broadcastResponse = await transactions_1.broadcastTransaction(TransactionObj, network);
         return { transactionDetails: broadcastResponse.txid }
+    }
+
+
+    async getFees(rawTransaction, _privateKey) {
+
+        const { wallet, network, address } = this.store.getState()
+        const { from } = rawTransaction
+
+        let privateKey = _privateKey
+        if (!privateKey) {
+            const idx = address.indexOf(from)
+            if (idx < 0)
+                throw "Invalid address, the address is not available in the wallet"
+            
+            privateKey = wallet.accounts[idx].stxPrivateKey
+        }
+
+        const payload = helpers.generatePayload(rawTransaction);
+        let txOptions = helpers.generateUnsignedTransaction(rawTransaction, privateKey, network)
+        const transaction = helpers.generateStacksTransactionObject(txOptions, rawTransaction.transactionType, payload)
+        
+        let fees
+        try{
+            const estimatedLen = transactions_1.estimateTransactionByteLength(transaction, network);
+            let fee = (await transactions_1.estimateTransaction(transaction.payload, estimatedLen, network));
+            fees = {
+                slow: fee[0].fee,
+                standard: fee[1].fee,
+                fast: fee[2].fee
+            }
+            return { fees: fees };
+
+        }catch (error) {
+            if (error instanceof NoEstimateAvailableError) {
+                let fee = await transactions_1.estimateTransferUnsafe(transaction, network);
+                fees = {
+                    slow: fee,
+                    standard: fee,
+                    fast: fee,
+                }
+                return { fees: fees };
+                
+            }
+            throw error; 
+        } 
     }
 
     persistAllAddress(_address) {

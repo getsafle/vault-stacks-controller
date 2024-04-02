@@ -101,9 +101,9 @@ describe('KeyringController', async () => {
             to: acc[1],
             amount: 1,
             contractDetails: {
-            contractAddress: VELAR_CONTRACT_ADDRESS,
-            contractName: CONTRACT_NAME,
-            assetName: ASSET_NAME,
+                contractAddress: VELAR_CONTRACT_ADDRESS,
+                contractName: CONTRACT_NAME,
+                assetName: ASSET_NAME,
             },
             transactionType: "contract_call",
         };
@@ -154,6 +154,55 @@ describe('KeyringController', async () => {
             assert(e.message === "Improperly formatted private-key. Private-key byte length should be 32 or 33. Length provided: 2");
         }
         
+    })
+
+    it('estimate STX trasnfer fees', async () => {
+        const acc = await stacksKeyring.getAccounts();
+        const txns = {
+            from: acc[0],
+            to: acc[1],
+            amount: 1,
+            transactionType: "token_transfer",
+        };
+        let {fees} = await stacksKeyring.getFees(txns)
+        assert(fees.standard, "Fee not calculated successfully")
+    })
+
+    it('estimate FT transfer fees', async () => {
+        const acc = await stacksKeyring.getAccounts();
+        const txnsVelar = {
+            from: acc[0],
+            to: acc[1],
+            amount: 1,
+            contractDetails: {
+                contractAddress: VELAR_CONTRACT_ADDRESS,
+                contractName: CONTRACT_NAME,
+                assetName: ASSET_NAME,
+            },
+            transactionType: "contract_call",
+        };
+        let {fees} = await stacksKeyring.getFees(txnsVelar)
+        assert(fees.standard, "Fee not calculated successfully")
+    })
+
+    it('invalid transaction type', async () => {
+        const acc = await stacksKeyring.getAccounts();
+        const txnsVelar = {
+            from: acc[0],
+            to: acc[1],
+            amount: 1,
+            contractDetails: {
+                contractAddress: VELAR_CONTRACT_ADDRESS,
+                contractName: CONTRACT_NAME,
+                assetName: ASSET_NAME,
+            },
+            // transactionType: "contract_call",
+        };
+        try{
+            let {fees} = await stacksKeyring.getFees(txnsVelar)
+        }catch(err) {
+            assert(err.message === "Invalid Transaction Type: undefined");
+        }
     })
     
     
