@@ -5,6 +5,7 @@ const transactions_1 = require('@stacks/transactions');
 const { TransactionTypes } = require('@stacks/connect');
 const helpers = require('./helper/index');
 const { HIRO_BASE_URL, HIRO_BASE_TEST_URL }  = require('./constants/index');
+const { NoEstimateAvailableError} = require('@stacks/transactions/dist/errors');
 
 const { network: { MAINNET, TESTNET }} = require('./config/index')
 
@@ -138,19 +139,21 @@ class KeyringController {
                 standard: fee[1].fee,
                 fast: fee[2].fee
             }
-        }catch (e) {
-            if (error instanceof transactions_1.NoEstimateAvailableError) {
+            return { fees: fees };
+
+        }catch (error) {
+            if (error instanceof NoEstimateAvailableError) {
                 let fee = await transactions_1.estimateTransferUnsafe(transaction, network);
                 fees = {
                     slow: fee,
                     standard: fee,
                     fast: fee,
                 }
+                return { fees: fees };
+                
             }
-            throw error;
-        }
-
-        return { fees: fees };
+            throw error; 
+        } 
     }
 
     persistAllAddress(_address) {
