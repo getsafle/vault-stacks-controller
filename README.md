@@ -1,4 +1,4 @@
-# vault-stacks-controller<code><a href="https://www.docker.com/" target="_blank"><img height="50" src="https://assets-global.website-files.com/618b0aafa4afde65f2fe38fe/65d8f85573da2c351da7fe13_logo%20(1).png"></a></code>
+# vault-stacks-controller<code><a href="https://www.docker.com/" target="_blank"><img height="50" src="https://assets.coingecko.com/coins/images/2069/standard/Stacks_Logo_png.png?1709979332"></a></code>
 
 [![npm version](https://badge.fury.io/js/@getsafle%2Fvault-stacks-controller.svg)](https://badge.fury.io/js/@getsafle%2Fvault-stacks-controller) <img alt="Static Badge" src="https://img.shields.io/badge/License-MIT-green">   [![Discussions][discussions-badge]][discussions-link]
  <img alt="Static Badge" src="https://img.shields.io/badge/stacks_controller-documentation-purple"> 
