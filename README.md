@@ -25,7 +25,13 @@ const stacksController = new KeyringController({
 
 ## Methods
 
-### Generate Keyring with 1 account or add new account
+### Generate Wallet with 1 account
+
+```
+await stacksController.generateWallet();
+```
+
+### add new account
 
 ```
 const keyringState = await stacksController.addAccount();
