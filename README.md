@@ -54,9 +54,20 @@ const privateKey = await stacksController.getAccounts();
 ```
 const signedTx = await stacksController.signTransaction(stacksTx);
 
-stacksTx: {from, to, amount, transactionType}
+STX transfer transaction:
+stacksTx: {from, to, amount, transactionType, memo: (optional)}
 
-transactionType = 'token_transfer' || 'contract_call
+Token transfer transaction:
+stacksTx: {
+        from,
+        to,
+        amount,
+        transactionType,
+        contractDetails: { contractAddress, contractName, assetName },
+        memo: (optional)
+    }
+
+transactionType = 'token_transfer' || 'contract_call'
 ```
 
 ### Sign a message
