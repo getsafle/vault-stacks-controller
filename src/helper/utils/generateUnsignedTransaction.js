@@ -12,7 +12,7 @@ function isTransactionTypeSupported(txType) {
 }
 
 function generateUnsignedSTXTransferTx(transaction, privateKey, network) {
-    const { from, to, amount, anchorMode } = transaction
+    const { from, to, amount, anchorMode, memo } = transaction
 
     const rawTx = {
         recipient: to,
@@ -20,6 +20,7 @@ function generateUnsignedSTXTransferTx(transaction, privateKey, network) {
         anchorMode: anchorMode ?? AnchorMode.Any,
         senderKey: privateKey,
         network: network,
+        memo: memo ? memo : ''
     };
 
     return rawTx
