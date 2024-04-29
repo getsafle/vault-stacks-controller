@@ -73,7 +73,7 @@ class KeyringController {
             privateKey = wallet.accounts[idx].stxPrivateKey
         }
 
-        const unsignedTransaction = helpers.generateUnsignedTransaction(transaction, privateKey, network)
+        const unsignedTransaction = await helpers.generateUnsignedTransaction(transaction, privateKey, network)
         let signedTransaction
         switch (transactionType) {
             case TransactionTypes.STXTransfer:
@@ -127,7 +127,7 @@ class KeyringController {
         }
 
         const payload = helpers.generatePayload(rawTransaction);
-        let txOptions = helpers.generateUnsignedTransaction(rawTransaction, privateKey, network)
+        let txOptions = await helpers.generateUnsignedTransaction(rawTransaction, privateKey, network)
         const transaction = helpers.generateStacksTransactionObject(txOptions, rawTransaction.transactionType, payload)
         
         let fees
