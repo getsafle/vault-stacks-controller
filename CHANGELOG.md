@@ -13,4 +13,5 @@
 - Added test cases for sign message and transaction function
 - Added fees estimation for STX andd fungible token transfers
 - Added test cases for estimate transaction fee
+- Applied the latest nonce values used by an account for transaction signing
 

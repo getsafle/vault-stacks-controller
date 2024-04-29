@@ -2,6 +2,7 @@ const { TransactionTypes } = require('@stacks/connect');
 const { AnchorMode } = require('@stacks/transactions');
 const { generatePostConditions } = require('./generatePostConditions')
 const { generateFunctionArgs } = require('./generateFunctionArgs')
+const { generateNextNonce } = require('./generateNextNonce')
 
 function isTransactionTypeSupported(txType) {
     return (
@@ -11,7 +12,7 @@ function isTransactionTypeSupported(txType) {
     );
 }
 
-function generateUnsignedSTXTransferTx(transaction, privateKey, network) {
+function generateUnsignedSTXTransferTx(transaction, privateKey, network, nonce) {
     const { from, to, amount, anchorMode, memo } = transaction
 
     const rawTx = {
@@ -23,10 +24,12 @@ function generateUnsignedSTXTransferTx(transaction, privateKey, network) {
         memo: memo ? memo : ''
     };
 
+    if(nonce) rawTx.nonce = nonce
+
     return rawTx
 }
 
-function generateUnsignedContractCallTx(transaction, privateKey, network) {
+function generateUnsignedContractCallTx(transaction, privateKey, network, nonce) {
     if (!transaction?.contractDetails?.assetName || !transaction?.contractDetails?.contractName || !transaction?.contractDetails?.contractAddress) {
         throw new Error("Contract Details are missing")
     }
@@ -48,22 +51,26 @@ function generateUnsignedContractCallTx(transaction, privateKey, network) {
         network: network,
     };
 
+    if(nonce) rawTxContractCall.nonce = nonce
+
     return rawTxContractCall;
 }
 
-function generateUnsignedTransaction(transaction, privateKey, network) {
+async function generateUnsignedTransaction(transaction, privateKey, network) {
     const { transactionType } = transaction
 
     const isValid = isTransactionTypeSupported(transactionType);
 
-  if (!isValid) throw new Error(`Invalid Transaction Type: ${transactionType}`);
+    const { nonce } = await generateNextNonce(transaction.from, network)
 
-    switch (transactionType) {
-        case TransactionTypes.STXTransfer:
-            return generateUnsignedSTXTransferTx(transaction, privateKey, network);
-        case TransactionTypes.ContractCall:
-            return generateUnsignedContractCallTx(transaction, privateKey, network);
-    }
+    if (!isValid) throw new Error(`Invalid Transaction Type: ${transactionType}`);
+
+        switch (transactionType) {
+            case TransactionTypes.STXTransfer:
+                return generateUnsignedSTXTransferTx(transaction, privateKey, network, nonce);
+            case TransactionTypes.ContractCall:
+                return generateUnsignedContractCallTx(transaction, privateKey, network, nonce);
+        }
 
 }
 
