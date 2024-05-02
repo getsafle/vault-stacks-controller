@@ -15,3 +15,7 @@
 - Added test cases for estimate transaction fee
 - Applied the latest nonce values used by an account for transaction signing
 
+
+### 1.0.1 (2024-05-02)
+
+- Added incoming estimated fee for transaction signing
