@@ -22,6 +22,7 @@ class KeyringController {
         const address = stacks.getStxAddress({ account: wallet.accounts[wallet.accounts.length - 1], transactionVersion: helpers.getTransactionVersion(networkType) });
         this.persistAllAddress(address)
         this.updatePersistentStore({ wallet: wallet })
+        return { address: address }
     }
 
     async addAccount() {
