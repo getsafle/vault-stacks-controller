@@ -13,7 +13,7 @@ function isTransactionTypeSupported(txType) {
 }
 
 function generateUnsignedSTXTransferTx(transaction, privateKey, network, nonce) {
-    const { from, to, amount, anchorMode, memo } = transaction
+    const { from, to, amount, anchorMode, memo, fee } = transaction
 
     const rawTx = {
         recipient: to,
@@ -25,6 +25,8 @@ function generateUnsignedSTXTransferTx(transaction, privateKey, network, nonce) 
     };
 
     if(nonce) rawTx.nonce = nonce
+    if(fee) rawTx.fee = fee
+
 
     return rawTx
 }
@@ -33,7 +35,7 @@ function generateUnsignedContractCallTx(transaction, privateKey, network, nonce)
     if (!transaction?.contractDetails?.assetName || !transaction?.contractDetails?.contractName || !transaction?.contractDetails?.contractAddress) {
         throw new Error("Contract Details are missing")
     }
-    const { from, to, amount, anchorMode, contractDetails : {contractAddress, contractName, assetName}, memo} = transaction
+    const { from, to, amount, anchorMode, contractDetails : {contractAddress, contractName, assetName}, memo, fee} = transaction
 
     const postConditions = generatePostConditions(transaction)
     const functionArgs = generateFunctionArgs(from, to, amount, memo)
@@ -52,6 +54,7 @@ function generateUnsignedContractCallTx(transaction, privateKey, network, nonce)
     };
 
     if(nonce) rawTxContractCall.nonce = nonce
+    if(fee) rawTxContractCall.fee = fee
 
     return rawTxContractCall;
 }
