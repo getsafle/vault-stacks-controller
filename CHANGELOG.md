@@ -23,3 +23,4 @@
 ### 1.0.2 (2024-05-02)
 
 - Updated 'main' path in package.json.
+- Updated generate wallet return parameters
