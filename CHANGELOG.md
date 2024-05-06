@@ -24,3 +24,7 @@
 
 - Updated 'main' path in package.json.
 - Updated generate wallet return parameters
+
+### 1.0.3 (2024-05-06)
+
+- Bugfix: sign message

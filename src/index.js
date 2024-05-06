@@ -90,11 +90,12 @@ class KeyringController {
     }
 
     async signMessage(message, _address, _privateKey = null) {
+        const { wallet, address } = this.store.getState()
         const messageHash = Buffer.from(message).toString('hex');
 
         let privateKey = _privateKey
         if (!privateKey) {
-            const idx = address.indexOf(from)
+            const idx = address.indexOf(_address)
             if (idx < 0)
                 throw "Invalid address, the address is not available in the wallet"
             
