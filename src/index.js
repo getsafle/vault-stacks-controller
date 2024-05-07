@@ -41,7 +41,7 @@ class KeyringController {
 
     async exportPrivateKey(_address) {
         const { wallet, network, address } = this.store.getState()
-        const idx = address.indexOf(_address)
+        const idx = address.indexOf(_address.toUpperCase())
         if (idx < 0)
           throw "Invalid address, the address is not available in the wallet"
 
@@ -67,7 +67,7 @@ class KeyringController {
 
         let privateKey = _privateKey
         if (!privateKey) {
-            const idx = address.indexOf(from)
+            const idx = address.indexOf(from.toUpperCase())
             if (idx < 0)
                 throw "Invalid address, the address is not available in the wallet"
             
@@ -95,7 +95,7 @@ class KeyringController {
 
         let privateKey = _privateKey
         if (!privateKey) {
-            const idx = address.indexOf(_address)
+            const idx = address.indexOf(_address.toUpperCase())
             if (idx < 0)
                 throw "Invalid address, the address is not available in the wallet"
             
@@ -121,7 +121,7 @@ class KeyringController {
 
         let privateKey = _privateKey
         if (!privateKey) {
-            const idx = address.indexOf(from)
+            const idx = address.indexOf(from.toUpperCase())
             if (idx < 0)
                 throw "Invalid address, the address is not available in the wallet"
             

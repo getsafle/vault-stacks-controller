@@ -28,3 +28,7 @@
 ### 1.0.3 (2024-05-06)
 
 - Bugfix: sign message
+
+### 1.0.4 (2024-05-07)
+
+- Generalize the address format to uppercase
