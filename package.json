@@ -1,6 +1,6 @@
 {
   "name": "@getsafle/vault-stacks-controller",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Stacks chain controller for Safle Vault",
   "main": "src/index.js",
   "scripts": {
