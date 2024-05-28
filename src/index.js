@@ -114,22 +114,13 @@ class KeyringController {
     }
 
 
-    async getFees(rawTransaction, _privateKey) {
+    async getFees(rawTransaction) {
 
         const { wallet, network, address } = this.store.getState()
         const { from } = rawTransaction
 
-        let privateKey = _privateKey
-        if (!privateKey) {
-            const idx = address.indexOf(from.toUpperCase())
-            if (idx < 0)
-                throw "Invalid address, the address is not available in the wallet"
-            
-            privateKey = wallet.accounts[idx].stxPrivateKey
-        }
-
         const payload = helpers.generatePayload(rawTransaction);
-        let txOptions = await helpers.generateUnsignedTransaction(rawTransaction, privateKey, network)
+        let txOptions = await helpers.generateUnsignedTransaction(rawTransaction, undefined, network)
         const transaction = helpers.generateStacksTransactionObject(txOptions, rawTransaction.transactionType, payload)
         
         let fees
