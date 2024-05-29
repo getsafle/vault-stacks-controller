@@ -114,28 +114,18 @@ class KeyringController {
     }
 
 
-    async getFees(rawTransaction, _privateKey) {
+    async getFees(rawTransaction) {
 
-        const { wallet, network, address } = this.store.getState()
-        const { from } = rawTransaction
-
-        let privateKey = _privateKey
-        if (!privateKey) {
-            const idx = address.indexOf(from.toUpperCase())
-            if (idx < 0)
-                throw "Invalid address, the address is not available in the wallet"
-            
-            privateKey = wallet.accounts[idx].stxPrivateKey
-        }
+        const { network } = this.store.getState()
 
         const payload = helpers.generatePayload(rawTransaction);
-        let txOptions = await helpers.generateUnsignedTransaction(rawTransaction, privateKey, network)
+        let txOptions = await helpers.generateUnsignedTransaction(rawTransaction, undefined, network)
         const transaction = helpers.generateStacksTransactionObject(txOptions, rawTransaction.transactionType, payload)
         
         let fees
         try{
             const estimatedLen = transactions_1.estimateTransactionByteLength(transaction, network);
-            let fee = (await transactions_1.estimateTransaction(transaction.payload, estimatedLen, network));
+            let fee = (await helpers.estimateTransaction(transaction.payload, estimatedLen, network));
             fees = {
                 slow: fee[0].fee,
                 standard: fee[1].fee,
@@ -145,11 +135,11 @@ class KeyringController {
 
         }catch (error) {
             if (error instanceof NoEstimateAvailableError) {
-                let fee = await transactions_1.estimateTransferUnsafe(transaction, network);
+                let fee = parseInt(await helpers.estimateTransferUnsafe(transaction, network));
                 fees = {
                     slow: fee,
-                    standard: fee,
-                    fast: fee,
+                    standard: fee + parseInt(fee * 0.05),
+                    fast: fee + parseInt(fee * 0.1),
                 }
                 return { fees: fees };
                 

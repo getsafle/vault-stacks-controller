@@ -13,7 +13,11 @@ function generateStacksTransactionObject(txOptions, transactionType, payload) {
         };
         txOptions = Object.assign(defaultOptions, txOptions);
         
-        const publicKey = (0, transactions_1.publicKeyToString)((0, transactions_1.getPublicKey)((0, transactions_1.createStacksPrivateKey)(txOptions.senderKey)));
+        let publicKey = '';
+        if(txOptions.senderKey) {
+            publicKey = (0, transactions_1.publicKeyToString)((0, transactions_1.getPublicKey)((0, transactions_1.createStacksPrivateKey)(txOptions.senderKey)));
+        }
+        
         let spendingCondition = (0, transactions_1.createSingleSigSpendingCondition)(transactions_1.AddressHashMode.SerializeP2PKH, publicKey, txOptions.nonce, txOptions.fee);
         let authorization = (0, transactions_1.createStandardAuth)(spendingCondition);
         const transaction = new transactions_1.StacksTransaction(txOptions.network.version, authorization, payload, undefined, undefined, txOptions.anchorMode, txOptions.network.chainId);
@@ -28,8 +32,12 @@ function generateStacksTransactionObject(txOptions, transactionType, payload) {
             sponsored: false,
         };
         txOptions = Object.assign(defaultOptions, txOptions);
+
+        let publicKey = '';
+        if(txOptions.senderKey) {
+            publicKey = (0, transactions_1.publicKeyToString)((0, transactions_1.getPublicKey)((0, transactions_1.createStacksPrivateKey)(txOptions.senderKey)));
+        }
         
-        const publicKey = (0, transactions_1.publicKeyToString)((0, transactions_1.getPublicKey)((0, transactions_1.createStacksPrivateKey)(txOptions.senderKey)));
         let spendingCondition = (0, transactions_1.createSingleSigSpendingCondition)(transactions_1.AddressHashMode.SerializeP2PKH, publicKey, txOptions.nonce, txOptions.fee);
         let authorization = (0, transactions_1.createStandardAuth)(spendingCondition);
         const lpPostConditions = (0, transactions_1.createLPList)(txOptions.postConditions);
