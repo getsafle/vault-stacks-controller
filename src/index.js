@@ -4,7 +4,7 @@ const stacks = require('@stacks/wallet-sdk');
 const transactions_1 = require('@stacks/transactions');
 const { TransactionTypes } = require('@stacks/connect');
 const helpers = require('./helper/index');
-const { HIRO_BASE_URL, HIRO_BASE_TEST_URL }  = require('./constants/index');
+const { HIRO_BASE_URL, HIRO_BASE_TEST_URL, HIRO_API_KEY }  = require('./constants/index');
 const { NoEstimateAvailableError} = require('@stacks/transactions/dist/errors');
 
 const { network: { MAINNET, TESTNET }} = require('./config/index')
@@ -168,7 +168,10 @@ const getBalance = async (address, network) => {
         URL = URL + `address/${address}/balances`
         const balance = await axios({
           url : `${URL}`,
-          method: 'GET'
+          method: 'GET',
+          headers: {
+            "x-hiro-api-key": HIRO_API_KEY,
+          },
         });
         return { balance: balance.data.stx.balance / 1000000 }
       } catch (err) {
