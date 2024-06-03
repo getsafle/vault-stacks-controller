@@ -32,3 +32,8 @@
 ### 1.0.4 (2024-05-07)
 
 - Generalize the address format to uppercase
+
+### 1.0.5 (2024-05-28)
+
+- Removed private key from fees estimation
+- Added hiro api key to estimate transaction fee
